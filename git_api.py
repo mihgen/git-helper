@@ -13,6 +13,7 @@ class GitEngine(object):
         self.local_repo = local_repo
         self.remote_path = repo_url
         self.local_branch = "temp-for-engine"
+        self.refs_name = "origin"
         try:
             # Raises exception if can't change dir or can't get git info
             self.__exec("git status")
@@ -49,6 +50,14 @@ class GitEngine(object):
             local_branch = self.local_branch
         if not remote_path:
             remote_path = self.remote_path
+        # Check if we can do fast-forward
+        if not self.is_rebased(local_branch, "remotes/%s/%s" % \
+                    (self.refs_name, remote_branch)):
+            print "ERROR: Not able to push. " \
+                  "Branch %s was not rebased to %s" % \
+                  (local_branch, remote_branch)
+            raise
+
         command = "git push %s %s:%s" % \
                 (remote_path, local_branch, remote_branch)
         try:
@@ -63,6 +72,7 @@ class GitEngine(object):
     def fetch(self, remote_path=None, refs_name="origin"):
         if not remote_path:
             remote_path = self.remote_path
+        self.refs_name = refs_name
         command = "git fetch " + remote_path
         # add refs definition
         command += " +refs/heads/*:refs/remotes/%s/*" % refs_name
@@ -105,6 +115,24 @@ class GitEngine(object):
             # Exception is raised if there is no branch to delete
             pass
         self.__exec(command)
+
+    def is_rebased(self, source, destination):
+        if not source:
+            source = self.local_branch
+        # Get commits that differ between branches
+        commits = self.diff_commits(destination, source)
+        # Check if parent of the first commit is refers to top dest. branch
+        command = "git rev-parse %s^1" % commits[0]
+        parent = self.__exec(command)
+        if parent == "":
+            raise GitEngineError(0, "Could not determine parent commit")
+
+        head_in_dest = self.__exec("git rev-parse %s" % destination)
+
+        if parent == head_in_dest:
+            return True
+        else:
+            return False
 
 
 class GitEngineError(Exception):
