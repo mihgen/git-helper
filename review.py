@@ -12,6 +12,8 @@ def main():
             help='URL to repository')
     parser.add_argument('--branch', dest='remote_branch', type=str,
             required=True, help='Remote branch')
+    parser.add_argument('--preurl', dest='preurl', type=str,
+            default="", help='Base URL to show commits')
 
     params = parser.parse_args()
 
@@ -25,6 +27,11 @@ def main():
 
     commits = git.diff_commits("remotes/origin/master",
                                "remotes/origin/%s" % params.remote_branch)
+    if not commits:
+        print "ERROR: No difference from master branch!"
+        sys.exit(1)
+    for cmt in commits:
+        print "Found commit to review: %s%s" % (params.preurl, cmt)
     git.checkout_from_remote_branch("remotes/origin/master")
     for sha in commits:
         git.cherry_pick(sha)
