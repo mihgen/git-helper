@@ -28,10 +28,10 @@ def main():
     commits = git.diff_commits("remotes/origin/master",
                                "remotes/origin/%s" % params.remote_branch)
     if not commits:
-        print "ERROR: No difference from master branch!"
+        print "ERROR: Same or older than master branch!"
         sys.exit(1)
     for cmt in commits:
-        print "Found commit to review: %s%s" % (params.preurl, cmt)
+        print "Commit to review: %s%s" % (params.preurl, cmt)
     git.checkout_from_remote_branch("remotes/origin/master")
     for sha in commits:
         git.cherry_pick(sha)
