@@ -2,7 +2,6 @@
 import sys
 
 import git_api
-import config
 
 def main():
     parser = argparse.ArgumentParser(description="Review system")
