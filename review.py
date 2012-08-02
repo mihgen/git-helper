@@ -31,7 +31,7 @@ def main():
         print "ERROR: Same or older than master branch!"
         sys.exit(1)
     for cmt in commits:
-        print "Commit to review: %s%s" % (params.preurl, cmt)
+        print "Commit to review: <a href=\"%s%s\">%s</a>" % (params.preurl, cmt, cmt)
     git.checkout_from_remote_branch("remotes/origin/master")
     for sha in commits:
         git.cherry_pick(sha)
