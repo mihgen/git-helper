@@ -4,12 +4,10 @@ import subprocess
 import sys
 import os
 
-import config
-
 
 class GitEngine(object):
 
-    def __init__(self, local_repo=config.REPO_DIR, repo_url=config.REPO_URL):
+    def __init__(self, local_repo, repo_url):
         self.local_repo = local_repo
         self.remote_path = repo_url
         self.local_branch = "temp-for-engine"
