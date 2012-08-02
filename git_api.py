@@ -37,7 +37,7 @@ class GitEngine(object):
             proc.stderr.close()
 
         if status != 0:
-            print "ERRRO: Command: '%s' Status: %s err: '%s' out: '%s'" % \
+            print "ERRROR: Command: '%s' Status: %s err: '%s' out: '%s'" % \
                     (command, status, stderr_value, stdout_value)
             raise GitEngineError(status, stderr_value)
 
