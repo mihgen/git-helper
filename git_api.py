@@ -119,6 +119,9 @@ class GitEngine(object):
             source = self.local_branch
         # Get commits that differ between branches
         commits = self.diff_commits(destination, source)
+        if not commits:
+            # It means the branch has been rebased and fast-forwarded already
+            return True
         # Check if parent of the first commit is refers to top dest. branch
         command = "git rev-parse %s^1" % commits[0]
         parent = self.__exec(command)
