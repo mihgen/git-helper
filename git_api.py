@@ -67,6 +67,12 @@ class GitEngine(object):
                       (local_branch, remote_branch)
             raise
 
+    def remove_remote_branch(self, remote_branch, remote_path=None):
+        if not remote_path:
+            remote_path = self.remote_path
+        self.__exec("git push %s :%s" % (remote_path, remote_branch))
+
+
     def fetch(self, remote_path=None, refs_name="origin"):
         if not remote_path:
             remote_path = self.remote_path
