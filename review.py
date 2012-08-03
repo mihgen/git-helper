@@ -46,6 +46,8 @@ def main():
 
     if params.push:
         git.push("master")
+        # Remove remote branch as we don't need it after merge
+        git.remove_remote_branch(params.remote_branch)
 
 if __name__ == "__main__":
     main()
