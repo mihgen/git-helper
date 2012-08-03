@@ -37,8 +37,12 @@ def main():
     for sha in commits:
         git.cherry_pick(sha)
 
+    desc = ""
     for cmt in commits:
-        print "Commit to review: <a href=\"%s%s\">%s</a>" % (params.preurl, cmt, cmt)
+        desc += "<li>Commit to review: <a href=\"%s%s\">%s</a></li>" % (params.preurl, cmt, cmt[:10])
+
+    desc = "<ol>%s</ol>" % desc
+    print desc
 
     if params.push:
         git.push("master")
