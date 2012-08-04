@@ -166,6 +166,9 @@ class GitEngine(object):
             pass
         self.__exec(command)
 
+    def rebase(self, branch):
+        self.__exec("git rebase %s" % branch)
+
     def is_rebased(self, source, destination):
         if not source:
             source = self.local_branch

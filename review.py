@@ -27,20 +27,12 @@ class Review(object):
         self.github_user = config.get('github', 'user')
         self.github_password = config.get('github', 'password')
 
-
     def rebase(self):
         self.git.fetch()
+        self.git.checkout_from_remote_branch("remotes/origin/%s" % \
+                self.remote_branch)
 
-        commits = self.git.diff_commits("remotes/origin/master",
-                                   "remotes/origin/%s" % self.remote_branch)
-        if not commits:
-            print "ERROR: Same or older than master branch!"
-            sys.exit(1)
-        self.git.checkout_from_remote_branch("remotes/origin/master")
-        for sha in commits:
-            # Raises exception if it can't be fast-forwarded
-            print "Cherry-picking %s" % sha
-            self.git.cherry_pick(sha)
+        self.git.rebase("remotes/origin/master")
 
     def push(self):
         self.git.push("master")
