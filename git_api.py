@@ -43,9 +43,9 @@ class GithubEngine(object):
     def update_pull_request(self, user, repo, number, data):
         resource = Resource("https://api.github.com/repos/%s/%s/pulls/%s" %
                 (user, repo, number))
-        res = resource.patch(headers=self.headers,
+        res = resource.post(headers=self.headers,
                 payload=json.dumps(data))
-        return json.loads(response.body_string())
+        return json.loads(res.body_string())
 
     def create_pull_request(self, user, repo, to_user, base_branch,
                 branch, title="", body=""):
