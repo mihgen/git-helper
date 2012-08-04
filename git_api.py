@@ -4,6 +4,49 @@ import subprocess
 import sys
 import os
 
+import json
+from restkit import Resource, BasicAuth, Connection, request
+from socketpool import ConnectionPool
+
+
+class GithubEngine(object):
+
+    def __init__(self, user, password):
+        self.pool = ConnectionPool(factory=Connection)
+
+        serverurl = "https://api.github.com"
+        auth = BasicAuth(user, password)
+        authreqdata = {"scopes": ["repo"], "note": "admin script"}
+        resource = Resource('https://api.github.com/authorizations',
+                pool=self.pool, filters=[auth])
+        response = resource.post(headers={"Content-Type": "application/json"},
+                payload=json.dumps(authreqdata))
+        self.token = json.loads(response.body_string())['token']
+
+        self.headers = {'Content-Type': 'application/json',
+                'Authorization': 'token %s' % self.token}
+
+    def list_repos(self):
+        resource = Resource('https://api.github.com/user/repos',
+                pool=self.pool)
+        response = resource.get(headers=self.headers)
+        return json.loads(response.body_string())
+
+    def create_pull_request(self, user, repo, to_user, base_branch,
+                branch, title="", body=""):
+        if not title:
+            title = "Robot pull request. Please review."
+        resource = Resource("https://api.github.com/repos/%s/%s/pulls" %
+                (user, repo))
+        pulldata = {
+                "title": title, "body": body,
+                "head": "%s:%s" % (to_user, branch),
+                "base": base_branch
+        }
+        response = resource.post(headers=self.headers,
+                payload=json.dumps(pulldata))
+        return json.loads(response.body_string())
+
 
 class GitEngine(object):
 
@@ -72,7 +115,6 @@ class GitEngine(object):
             remote_path = self.remote_path
         self.__exec("git push %s :%s" % (remote_path, remote_branch))
 
-
     def fetch(self, remote_path=None, refs_name="origin"):
         if not remote_path:
             remote_path = self.remote_path
@@ -85,6 +127,10 @@ class GitEngine(object):
     def cherry_pick(self, from_sha):
         command = "git cherry-pick %s" % from_sha
 
+        self.__exec(command)
+
+    def merge_fast_forward(self, branch_to_merge):
+        command = "git merge %s --ff-only" % branch_to_merge
         self.__exec(command)
 
     def diff_commits(self, master_branch, slave_branch):
