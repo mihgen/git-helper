@@ -39,6 +39,18 @@ class Review(object):
         # Remove remote branch as we don't need it after merge
         self.git.remove_remote_branch(self.remote_branch)
 
+        print "Closing pull request.."
+        self._github_lazy_init()
+        pull_requests = self.github.get_pull_request_by_branch(self.user,
+                self.repo, self.remote_branch)
+
+        if pull_requests:
+            pull_number = pull_request[0]['number']
+            print "Found pull request #%s. Closing.." % pull_number
+            newdata = {'state': 'closed'}
+            self.github.update_pull_request(self.user, self.repo,
+                    pull_number, newdata)
+
     def add_pull_request(self, title="default title", body="default body"):
         self._github_lazy_init()
         res = self.github.create_pull_request(self.user, self.repo,

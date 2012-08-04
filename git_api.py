@@ -32,6 +32,21 @@ class GithubEngine(object):
         response = resource.get(headers=self.headers)
         return json.loads(response.body_string())
 
+    def get_pull_request_by_branch(self, user, repo, branch):
+        resource = Resource("https://api.github.com/repos/%s/%s/pulls" %
+                (user, repo))
+        pulls = json.loads(resource.get(headers=self.headers).body_string())
+        pulls_by_branch = filter(lambda p: p['head']['ref']==branch, pulls)
+
+        return pulls_by_branch  # I hope there is no more than one
+
+    def update_pull_request(self, user, repo, number, data):
+        resource = Resource("https://api.github.com/repos/%s/%s/pulls/%s" %
+                (user, repo, number))
+        res = resource.patch(headers=self.headers,
+                payload=json.dumps(data))
+        return json.loads(response.body_string())
+
     def create_pull_request(self, user, repo, to_user, base_branch,
                 branch, title="", body=""):
         if not title:
@@ -119,7 +134,7 @@ class GitEngine(object):
         if not remote_path:
             remote_path = self.remote_path
         self.refs_name = refs_name
-        command = "git fetch " + remote_path
+        command = "git fetch -p " + remote_path
         # add refs definition
         command += " +refs/heads/*:refs/remotes/%s/*" % refs_name
         self.__exec(command)
