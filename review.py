@@ -56,8 +56,10 @@ class Review(object):
         res = self.github.create_pull_request(self.user, self.repo,
                 self.user, "master",
                 self.remote_branch, title, body)
+        url = "https://github.com/%s/%s/pull/%s" % \
+                (self.user, self.repo, res['number'])
         print "<a href=\"%s\">Pull request #%s</a>" % \
-                (res['url'], res['number'])
+                (url, res['number'])
 
     def _github_lazy_init(self):
         if not self.github:
