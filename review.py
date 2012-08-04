@@ -45,7 +45,7 @@ class Review(object):
                 self.repo, self.remote_branch)
 
         if pull_requests:
-            pull_number = pull_request[0]['number']
+            pull_number = pull_requests[0]['number']
             print "Found pull request #%s. Closing.." % pull_number
             newdata = {'state': 'closed'}
             self.github.update_pull_request(self.user, self.repo,
