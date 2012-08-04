@@ -44,7 +44,7 @@ class Review(object):
         res = self.github.create_pull_request(self.user, self.repo,
                 self.user, "master",
                 self.remote_branch, title, body)
-        print "Pull request <a href=\"%s\">%s</a>" % \
+        print "<a href=\"%s\">Pull request #%s</a>" % \
                 (res['url'], res['number'])
 
     def _github_lazy_init(self):
