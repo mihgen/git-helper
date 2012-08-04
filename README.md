@@ -7,6 +7,7 @@ git_api.py is wrapper on git subcommands,
 
 Usage example:
 
+```python
 >>> import git_api
 >>> engine = git_api.GitEngine()
 Executing command git status in cwd=test-repo
@@ -29,3 +30,4 @@ Executing command git checkout remotes/origin/master -b temp-for-engine in cwd=t
 Executing command git cherry-pick ebe7d216a3ad2268693946d122eff14fb2986051 in cwd=test-repo
 >>> engine.push("master")
 Executing command git push git@github.com:mihgen/test-repo.git temp-for-engine:master in cwd=test-repo
+```
