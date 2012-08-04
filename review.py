@@ -3,6 +3,7 @@ import sys
 import os
 
 import argparse
+import restkit
 import re
 import ConfigParser
 
@@ -53,13 +54,21 @@ class Review(object):
 
     def add_pull_request(self, title="default title", body="default body"):
         self._github_lazy_init()
-        res = self.github.create_pull_request(self.user, self.repo,
-                self.user, "master",
-                self.remote_branch, title, body)
+        try:
+            res = self.github.create_pull_request(self.user, self.repo,
+                    self.user, "master",
+                    self.remote_branch, title, body)
+            pull_number = res['number']
+        except restkit.errors.RequestFailed as e:
+            print "Error occured while creating pull request." \
+                    "Possibly it already exists."
+            pull_requests = self.github.get_pull_request_by_branch(self.user,
+                    self.repo, self.remote_branch)
+            pull_number = pull_requests[0]['number']
         url = "https://github.com/%s/%s/pull/%s" % \
-                (self.user, self.repo, res['number'])
+                (self.user, self.repo, pull_number)
         print "<a href=\"%s\">Pull request #%s</a>" % \
-                (url, res['number'])
+                (url, pull_number)
 
     def _github_lazy_init(self):
         if not self.github:
