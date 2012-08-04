@@ -1,0 +1,6 @@
+; Copy this configuration file to ~/review.conf and edit
+
+[github]
+user: user
+password: password
+

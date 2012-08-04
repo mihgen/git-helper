@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import sys
+import os
 
 import argparse
 import re
+import ConfigParser
 
 import git_api
-import config
 
 
 class Review(object):
@@ -19,6 +20,12 @@ class Review(object):
 
         self.repo_url = params.repo_url
         self.remote_branch = params.remote_branch
+
+        config = ConfigParser.ConfigParser()
+        config.read(os.path.expanduser("~/.review.conf"))
+
+        self.github_user = config.get('github', 'user')
+        self.github_password = config.get('github', 'password')
 
 
     def rebase(self):
@@ -42,13 +49,16 @@ class Review(object):
 
     def add_pull_request(self, title="default title", body="default body"):
         self._github_lazy_init()
-        self.github.create_pull_request(self.user, self.repo, self.user, "master",
+        res = self.github.create_pull_request(self.user, self.repo,
+                self.user, "master",
                 self.remote_branch, title, body)
+        print "Pull request <a href=\"%s\">%s</a>" % \
+                (res['url'], res['number'])
 
     def _github_lazy_init(self):
         if not self.github:
-            self.github = git_api.GithubEngine(config.GITHUB_USER,
-                    config.GITHUB_PASSWORD)
+            self.github = git_api.GithubEngine(self.github_user,
+                    self.github_password)
 
 
 if __name__ == "__main__":
