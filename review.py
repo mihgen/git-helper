@@ -38,7 +38,7 @@ class Review(object):
         except:
             print "ERROR: Auto-rebase of %s failed." \
                     " Try to 'git rebase origin/master' from your local" \
-                    "branch and push again"
+                    "branch and push again" % self.remote_branch
 
     def push(self):
         self.git.push("master")
