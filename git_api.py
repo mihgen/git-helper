@@ -172,6 +172,8 @@ class GitEngine(object):
 
         # Make sure we overwrite existing branch
         try:
+            # There are may be some local changes we need to wipe out
+            self.__exec("git reset --hard")
             # Detaching HEAD to be able to remove branch we are currently on
             self.__exec("git checkout %s" % remote_branch)
             # Deleting branch
