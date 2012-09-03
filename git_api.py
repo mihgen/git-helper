@@ -76,7 +76,7 @@ class GitEngine(object):
         except:
             # Let's create repo dir and initialize repo.
             self.__exec("mkdir %s" % local_repo, ".")
-            self.__exec("git init")
+        self.__exec("git init")
 
     def __exec(self, command, cwd=None):
         if not cwd:
